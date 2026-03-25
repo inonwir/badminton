@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🏸 แบดมินตัน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --pink:    #D4537E; --pink-lt:  #FBEAF0; --pink-md:  #ED93B1; --pink-dk: #993556;
+    --teal:    #1D9E75; --teal-lt:  #E1F5EE; --teal-md:  #5DCAA5; --teal-dk: #0F6E56;
+    --gold:    #FAC775; --gold-dk:  #633806;
+    --bg:      #fafaf8; --surface:  #ffffff;
+    --border:  rgba(0,0,0,.1); --border2: rgba(0,0,0,.18);
+    --txt:     #1a1a1a; --txt2:     #666; --txt3:     #999;
+    --radius:  18px;
+    --shadow:  0 4px 20px rgba(0,0,0,.08);
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --bg: #111; --surface: #1c1c1e;
+    --border: rgba(255,255,255,.1); --border2: rgba(255,255,255,.2);
+    --txt: #f0f0f0; --txt2: #aaa; --txt3: #666;
+    --pink-lt: #2a0e18; --teal-lt: #032920;
+    --shadow: 0 4px 20px rgba(0,0,0,.4);
+  }}
+  html { background: var(--bg); }
+  body { font-family: 'Nunito', sans-serif; color: var(--txt); background: var(--bg);
+         min-height: 100dvh; padding-bottom: 24px; }
+
+  /* ── Layout ── */
+  .page { display: none; max-width: 440px; margin: 0 auto; padding: 16px; animation: fadeUp .3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── Buttons ── */
+  .btn { display: block; width: 100%; padding: 14px; border-radius: 16px; border: none;
+         font-family: inherit; font-size: 16px; font-weight: 800; cursor: pointer; transition: transform .12s, opacity .12s; }
+  .btn:active { transform: scale(.96); }
+  .btn-primary { background: var(--pink); color: #fff; }
+  .btn-teal    { background: var(--teal); color: #fff; }
+  .btn-ghost   { background: transparent; border: 1.5px solid var(--border2); color: var(--txt2); font-size: 14px; padding: 11px; }
+  .btn-sm      { width: auto; padding: 8px 16px; font-size: 13px; border-radius: 12px; }
+  .btn + .btn  { margin-top: 8px; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* ── Inputs ── */
+  input[type=text] { display: block; width: 100%; padding: 11px 14px; border-radius: 14px;
+                     border: 1.5px solid var(--border); background: var(--surface);
+                     font-family: inherit; font-size: 15px; font-weight: 700; color: var(--txt); outline: none; }
+  input[type=text]:focus { border-color: var(--pink); }
+
+  /* ── Cards ── */
+  .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; box-shadow: var(--shadow); }
+
+  /* ═══════════════════════════
+     PAGE 1 – PLAYER POOL SETUP
+  ═══════════════════════════ */
+  .app-hero { text-align: center; padding: 24px 0 18px; }
+  .shuttle-big { font-size: 56px; display: block; }
+  .app-name { font-size: 30px; font-weight: 900; letter-spacing: -1px; }
+  .app-tagline { font-size: 13px; color: var(--txt2); margin-top: 4px; }
+
+  .section-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: var(--txt3); margin: 16px 0 8px; }
+  .player-list { display: flex; flex-direction: column; gap: 7px; }
+  .player-row { display: flex; gap: 8px; align-items: center; }
+  .player-row input { flex: 1; }
+  .del-btn { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--border2);
+             background: transparent; color: var(--txt3); font-size: 16px; cursor: pointer; flex-shrink: 0; transition: all .1s; }
+  .del-btn:hover { background: #fee; color: #c00; border-color: #c00; }
+  .add-player-btn { display: flex; align-items: center; justify-content: center; gap: 6px;
+                    padding: 10px; border-radius: 14px; border: 1.5px dashed var(--border2);
+                    background: transparent; color: var(--txt2); font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 4px; }
+  .add-player-btn:hover { border-color: var(--pink); color: var(--pink); }
+
+  /* ═══════════════════════════
+     PAGE 2 – PAIR PICKER
+  ═══════════════════════════ */
+  .round-badge { text-align: center; margin-bottom: 16px; }
+  .round-num { display: inline-block; background: var(--pink-lt); color: var(--pink-dk);
+               padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 800; }
+  .pick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .team-box { border-radius: 16px; padding: 12px; border: 1px solid var(--border); }
+  .team-box.a { background: var(--pink-lt); }
+  .team-box.b { background: var(--teal-lt); }
+  .team-box-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; }
+  .team-box.a .team-box-label { color: var(--pink-dk); }
+  .team-box.b .team-box-label { color: var(--teal-dk); }
+  .pick-slot { border-radius: 12px; padding: 9px 10px; margin-bottom: 6px; font-size: 14px; font-weight: 700;
+               border: 1.5px dashed var(--border2); color: var(--txt3); cursor: pointer; transition: all .15s; text-align: center; }
+  .pick-slot:last-child { margin-bottom: 0; }
+  .pick-slot.filled.a { background: var(--pink); color: #fff; border-color: var(--pink); }
+  .pick-slot.filled.b { background: var(--teal); color: #fff; border-color: var(--teal); }
+  .pick-slot.filled { cursor: pointer; }
+
+  .available-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: var(--txt3); margin-bottom: 8px; }
+  .chip-pool { display: flex; flex-wrap: wrap; gap: 8px; min-height: 40px; margin-bottom: 16px; }
+  .chip { padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer;
+          border: 1.5px solid var(--border2); background: var(--surface); color: var(--txt); transition: all .12s; }
+  .chip:hover { border-color: var(--pink); color: var(--pink); }
+  .chip.used { opacity: .3; cursor: default; pointer-events: none; }
+
+  /* ═══════════════════════════
+     PAGE 3 – PLAYING
+  ═══════════════════════════ */
+  .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .game-round-chip { background: var(--pink-lt); color: var(--pink-dk); padding: 6px 14px;
+                     border-radius: 20px; font-size: 12px; font-weight: 800; }
+  .score-area { display: grid; grid-template-columns: 1fr 32px 1fr; gap: 8px; align-items: center; margin-bottom: 14px; }
+  .score-card { border-radius: 20px; padding: 16px 10px 14px; text-align: center; position: relative; }
+  .score-card.a { background: var(--pink-lt); border: 2px solid transparent; }
+  .score-card.b { background: var(--teal-lt); border: 2px solid transparent; }
+  .score-card.serving { border-color: var(--pink); }
+  .score-card.b.serving { border-color: var(--teal); }
+  .score-card.serving::after { content: '🏸'; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 20px; }
+  .sc-team  { font-size: 13px; font-weight: 800; margin-bottom: 3px; }
+  .sc-team.a { color: var(--pink); }
+  .sc-team.b { color: var(--teal); }
+  .sc-players { font-size: 10px; font-weight: 600; color: var(--txt2); margin-bottom: 8px; line-height: 1.4; }
+  .sc-num { font-size: 72px; font-weight: 900; line-height: 1; }
+  .sc-num.a { color: var(--pink); }
+  .sc-num.b { color: var(--teal); }
+  .sc-btns { display: flex; gap: 5px; margin-top: 10px; }
+  .sc-btn { flex: 1; padding: 10px 0; border-radius: 12px; border: none; font-family: inherit; font-size: 20px; font-weight: 900; cursor: pointer; transition: transform .1s; }
+  .sc-btn:active { transform: scale(.88); }
+  .sc-btn.plus.a  { background: var(--pink); color: #fff; }
+  .sc-btn.minus.a { background: var(--pink-md); color: var(--pink-dk); }
+  .sc-btn.plus.b  { background: var(--teal); color: #fff; }
+  .sc-btn.minus.b { background: var(--teal-md); color: var(--teal-dk); }
+  .vs-sep { text-align: center; font-size: 18px; font-weight: 900; color: var(--txt3); }
+  .serve-hint { text-align: center; font-size: 11px; color: var(--txt3); font-weight: 600; margin-top: 6px; }
+  @keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.25)} 100%{transform:scale(1)} }
+  .do-pop { animation: pop .22s ease-out; }
+
+  /* ═══════════════════════════
+     PAGE 4 – RESULT
+  ═══════════════════════════ */
+  .result-hero { text-align: center; padding: 28px 0 20px; }
+  .trophy-icon { font-size: 64px; display: block; margin-bottom: 8px; animation: pop .5s ease; }
+  .win-label { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--txt3); }
+  .win-team-name { font-size: 26px; font-weight: 900; margin-top: 6px; }
+  .win-team-name.a { color: var(--pink); }
+  .win-team-name.b { color: var(--teal); }
+  .win-players { font-size: 14px; color: var(--txt2); margin-top: 4px; font-weight: 600; }
+  .score-badge { display: inline-flex; gap: 12px; align-items: center; background: var(--surface);
+                 border: 1px solid var(--border); border-radius: 50px; padding: 10px 24px;
+                 font-size: 28px; font-weight: 900; margin-top: 14px; }
+  .score-badge .sa { color: var(--pink); }
+  .score-badge .sb { color: var(--teal); }
+
+  /* ═══════════════════════════
+     PAGE 5 – LEADERBOARD
+  ═══════════════════════════ */
+  .lb-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .lb-title-txt { font-size: 22px; font-weight: 900; }
+  .lb-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+            background: var(--surface); border-radius: 16px; border: 1px solid var(--border); margin-bottom: 8px; }
+  .rank-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+                 font-size: 14px; font-weight: 800; background: var(--surface); border: 1.5px solid var(--border2); flex-shrink: 0; }
+  .rank-circle.gold { background: var(--gold); color: var(--gold-dk); border-color: var(--gold); }
+  .lb-name { font-size: 15px; font-weight: 800; }
+  .lb-stat { font-size: 12px; color: var(--txt2); font-weight: 600; margin-top: 2px; }
+  .win-tag { background: var(--teal-lt); color: var(--teal-dk); padding: 4px 12px;
+             border-radius: 20px; font-size: 13px; font-weight: 800; margin-left: auto; }
+
+  .match-history-row { display: flex; justify-content: space-between; align-items: center;
+                       padding: 10px 14px; background: var(--surface); border-radius: 12px;
+                       border: 1px solid var(--border); margin-bottom: 6px; }
+  .mh-score { font-size: 14px; font-weight: 700; }
+  .mh-score .wa { color: var(--pink); }
+  .mh-score .wb { color: var(--teal); }
+  .mh-date  { font-size: 11px; color: var(--txt3); font-weight: 600; }
+
+  .empty-state { text-align: center; padding: 48px 16px; color: var(--txt3); }
+  .empty-state span { font-size: 48px; display: block; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<!-- ─── PAGE 1: PLAYER SETUP ─── -->
+<div class="page active" id="pg-setup">
+  <div class="app-hero">
+    <span class="shuttle-big">🏸</span>
+    <div class="app-name">แบดมินตัน</div>
+    <div class="app-tagline">นับคะแนน · จัดอันดับ · สลับคู่ได้เรื่อยๆ ✨</div>
+  </div>
+
+  <div class="section-label">👥 รายชื่อคนเล่นวันนี้</div>
+  <div class="player-list" id="player-list"></div>
+  <button class="add-player-btn" id="btn-add-player">＋ เพิ่มผู้เล่น</button>
+
+  <div style="margin-top: 20px;">
+    <button class="btn btn-primary" id="btn-go-pick">เริ่มเลือกคู่ 🏸</button>
+    <button class="btn btn-ghost" id="btn-go-lb-from-setup">🏆 ดูตารางคะแนน</button>
+  </div>
+</div>
+
+<!-- ─── PAGE 2: PAIR PICKER ─── -->
+<div class="page" id="pg-pick">
+  <div class="round-badge">
+    <span class="round-num" id="round-badge-txt">รอบที่ 1</span>
+  </div>
+
+  <div class="pick-grid">
+    <div class="team-box a">
+      <div class="team-box-label">🌸 ทีม A</div>
+      <div class="pick-slot" id="slot-a1" data-team="a" data-idx="0">แตะเพื่อเลือก</div>
+      <div class="pick-slot" id="slot-a2" data-team="a" data-idx="1">แตะเพื่อเลือก</div>
+    </div>
+    <div class="team-box b">
+      <div class="team-box-label">🌿 ทีม B</div>
+      <div class="pick-slot" id="slot-b1" data-team="b" data-idx="0">แตะเพื่อเลือก</div>
+      <div class="pick-slot" id="slot-b2" data-team="b" data-idx="1">แตะเพื่อเลือก</div>
+    </div>
+  </div>
+
+  <div class="available-label">เลือกผู้เล่น (แตะชิพ → แตะช่อง)</div>
+  <div class="chip-pool" id="chip-pool"></div>
+
+  <button class="btn btn-primary" id="btn-start-game" disabled>เริ่มเกม! 🏸</button>
+  <button class="btn btn-ghost" id="btn-back-to-setup">← แก้รายชื่อ</button>
+</div>
+
+<!-- ─── PAGE 3: PLAYING ─── -->
+<div class="page" id="pg-play">
+  <div class="game-header">
+    <button class="btn btn-ghost btn-sm" id="btn-quit-game">← ออก</button>
+    <span class="game-round-chip" id="play-round-badge">รอบที่ 1</span>
+    <button class="btn btn-ghost btn-sm" id="btn-go-lb-from-play">🏆</button>
+  </div>
+
+  <div class="score-area">
+    <div class="score-card a serving" id="sc-card-a">
+      <div class="sc-team a" id="sc-team-a">ทีม A</div>
+      <div class="sc-players" id="sc-players-a">—</div>
+      <div class="sc-num a" id="sc-num-a">0</div>
+      <div class="sc-btns">
+        <button class="sc-btn minus a" id="sub-a">−</button>
+        <button class="sc-btn plus  a" id="add-a">+</button>
+      </div>
+    </div>
+
+    <div class="vs-sep">:</div>
+
+    <div class="score-card b" id="sc-card-b">
+      <div class="sc-team b" id="sc-team-b">ทีม B</div>
+      <div class="sc-players" id="sc-players-b">—</div>
+      <div class="sc-num b" id="sc-num-b">0</div>
+      <div class="sc-btns">
+        <button class="sc-btn minus b" id="sub-b">−</button>
+        <button class="sc-btn plus  b" id="add-b">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="serve-hint">🏸 = ฝั่งเสิร์ฟ · ชนะแต้มได้เสิร์ฟ</div>
+</div>
+
+<!-- ─── PAGE 4: RESULT ─── -->
+<div class="page" id="pg-result">
+  <div class="result-hero">
+    <span class="trophy-icon">🏆</span>
+    <div class="win-label">ชนะ!</div>
+    <div class="win-team-name" id="res-team-name">ทีม A</div>
+    <div class="win-players" id="res-players">—</div>
+    <div class="score-badge">
+      <span class="sa" id="res-sa">0</span>
+      <span style="color:var(--txt3);font-size:20px">–</span>
+      <span class="sb" id="res-sb">0</span>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <button class="btn btn-primary"  id="btn-next-round">🔄 รอบถัดไป (เลือกคู่ใหม่)</button>
+    <button class="btn btn-ghost"    id="btn-rematch">⚡ รีแมตช์ (คู่เดิม)</button>
+    <button class="btn btn-ghost"    id="btn-go-lb-from-result">🏆 ดูตารางคะแนน</button>
+    <button class="btn btn-ghost"    id="btn-new-session">🆕 เริ่มเซสชันใหม่</button>
+  </div>
+</div>
+
+<!-- ─── PAGE 5: LEADERBOARD ─── -->
+<div class="page" id="pg-lb">
+  <div class="lb-header">
+    <button class="btn btn-ghost btn-sm" id="btn-back-from-lb">← กลับ</button>
+    <div class="lb-title-txt">🏆 ตาราง</div>
+    <div style="width:70px"></div>
+  </div>
+  <div id="lb-content"></div>
+</div>
+
+<script>
+/* ══════════════════════════════════
+   STATE
+══════════════════════════════════ */
+let players = ['ไก่', 'เป็ด', 'หมู', 'วัว'];  // default names
+let round   = 1;
+let prevPage = 'pg-setup';
+
+// current match state
+let match = {
+  teamA: ['', ''],
+  teamB: ['', ''],
+  scA: 0,
+  scB: 0,
+  serving: 'a'   // 'a' or 'b'
+};
+
+// history: array of { teamA, teamB, scA, scB, winner, date }
+let history = [];
+
+/* ══════════════════════════════════
+   NAVIGATION
+══════════════════════════════════ */
+function goTo(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+/* ══════════════════════════════════
+   PAGE 1 – PLAYER SETUP
+══════════════════════════════════ */
+function renderPlayerList() {
+  const list = document.getElementById('player-list');
+  list.innerHTML = players.map((p, i) => `
+    <div class="player-row" data-i="${i}">
+      <input type="text" value="${p}" placeholder="ชื่อผู้เล่น ${i+1}" data-i="${i}">
+      ${players.length > 4
+        ? `<button class="del-btn" data-del="${i}">✕</button>`
+        : '<div style="width:36px"></div>'}
+    </div>`).join('');
+
+  list.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', e => {
+      players[+e.target.dataset.i] = e.target.value.trim();
+    });
+  });
+  list.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      players.splice(+e.target.dataset.del, 1);
+      renderPlayerList();
+    });
+  });
+}
+
+document.getElementById('btn-add-player').addEventListener('click', () => {
+  players.push('');
+  renderPlayerList();
+  // focus the new input
+  const inputs = document.querySelectorAll('#player-list input');
+  inputs[inputs.length - 1].focus();
+});
+
+document.getElementById('btn-go-pick').addEventListener('click', () => {
+  // validate: need at least 4 players with names
+  const valid = players.filter(p => p.trim());
+  if (valid.length < 4) { alert('ต้องมีผู้เล่นอย่างน้อย 4 คน'); return; }
+  players = players.filter(p => p.trim());
+  renderPlayerList();
+  initPickPage();
+  goTo('pg-pick');
+});
+
+document.getElementById('btn-go-lb-from-setup').addEventListener('click', () => {
+  prevPage = 'pg-setup';
+  renderLB();
+  goTo('pg-lb');
+});
+
+/* ══════════════════════════════════
+   PAGE 2 – PAIR PICKER
+══════════════════════════════════ */
+let pickedA = [null, null];  // player names
+let pickedB = [null, null];
+let selectedChip = null;  // name of chip selected, waiting for slot
+
+function initPickPage() {
+  pickedA = [null, null];
+  pickedB = [null, null];
+  selectedChip = null;
+  document.getElementById('round-badge-txt').textContent = `รอบที่ ${round}`;
+  renderPickUI();
+}
+
+function renderPickUI() {
+  // Slots
+  const slots = [
+    { id: 'slot-a1', team: 'a', idx: 0 },
+    { id: 'slot-a2', team: 'a', idx: 1 },
+    { id: 'slot-b1', team: 'b', idx: 0 },
+    { id: 'slot-b2', team: 'b', idx: 1 },
+  ];
+  slots.forEach(({ id, team, idx }) => {
+    const el = document.getElementById(id);
+    const val = team === 'a' ? pickedA[idx] : pickedB[idx];
+    el.textContent = val || 'แตะเพื่อเลือก';
+    el.classList.remove('filled', 'a', 'b');
+    if (val) el.classList.add('filled', team);
+    el.onclick = () => onSlotClick(team, idx);
+  });
+
+  // Chips
+  const usedAll = [...pickedA.filter(Boolean), ...pickedB.filter(Boolean)];
+  const pool = document.getElementById('chip-pool');
+  pool.innerHTML = players.map(p => {
+    const isUsed = usedAll.includes(p);
+    const isSel  = selectedChip === p;
+    return `<div class="chip ${isUsed ? 'used' : ''}" 
+               style="${isSel ? 'background:var(--pink);color:#fff;border-color:var(--pink)' : ''}"
+               data-name="${p}">${p}</div>`;
+  }).join('');
+
+  pool.querySelectorAll('.chip:not(.used)').forEach(c => {
+    c.addEventListener('click', () => {
+      selectedChip = selectedChip === c.dataset.name ? null : c.dataset.name;
+      renderPickUI();
+    });
+  });
+
+  // Start btn
+  const ready = pickedA.every(Boolean) && pickedB.every(Boolean);
+  document.getElementById('btn-start-game').disabled = !ready;
+}
+
+function onSlotClick(team, idx) {
+  if (!selectedChip) return;
+  // Remove from other slots if already placed
+  pickedA = pickedA.map(v => v === selectedChip ? null : v);
+  pickedB = pickedB.map(v => v === selectedChip ? null : v);
+  if (team === 'a') pickedA[idx] = selectedChip;
+  else              pickedB[idx] = selectedChip;
+  selectedChip = null;
+  renderPickUI();
+}
+
+document.getElementById('btn-start-game').addEventListener('click', () => {
+  match = { teamA: [...pickedA], teamB: [...pickedB], scA: 0, scB: 0, serving: 'a' };
+  renderPlayPage();
+  goTo('pg-play');
+});
+
+document.getElementById('btn-back-to-setup').addEventListener('click', () => {
+  renderPlayerList();
+  goTo('pg-setup');
+});
+
+/* ══════════════════════════════════
+   PAGE 3 – PLAYING
+══════════════════════════════════ */
+function renderPlayPage() {
+  document.getElementById('play-round-badge').textContent = `รอบที่ ${round}`;
+  document.getElementById('sc-team-a').textContent = 'ทีม A';
+  document.getElementById('sc-team-b').textContent = 'ทีม B';
+  document.getElementById('sc-players-a').textContent = match.teamA.join('\n');
+  document.getElementById('sc-players-b').textContent = match.teamB.join('\n');
+  updateScoreUI();
+}
+
+function updateScoreUI() {
+  document.getElementById('sc-num-a').textContent = match.scA;
+  document.getElementById('sc-num-b').textContent = match.scB;
+  const cardA = document.getElementById('sc-card-a');
+  const cardB = document.getElementById('sc-card-b');
+  cardA.classList.toggle('serving', match.serving === 'a');
+  cardB.classList.toggle('serving', match.serving === 'b');
+}
+
+function addPoint(team) {
+  if (team === 'a') match.scA++;
+  else              match.scB++;
+  match.serving = team;
+
+  // Pop animation
+  const el = document.getElementById(`sc-num-${team}`);
+  el.classList.remove('do-pop');
+  void el.offsetWidth;
+  el.classList.add('do-pop');
+
+  updateScoreUI();
+  checkWin();
+}
+
+function subPoint(team) {
+  if (team === 'a' && match.scA > 0) match.scA--;
+  if (team === 'b' && match.scB > 0) match.scB--;
+  updateScoreUI();
+}
+
+function checkWin() {
+  const { scA, scB } = match;
+  const WIN = 21;
+  const winner = (scA >= WIN && scA - scB >= 2) ? 'a'
+               : (scB >= WIN && scB - scA >= 2) ? 'b'
+               : null;
+  if (!winner) return;
+
+  // Save to history
+  history.push({
+    teamA:  [...match.teamA],
+    teamB:  [...match.teamB],
+    scA:    match.scA,
+    scB:    match.scB,
+    winner,
+    date:   new Date().toLocaleDateString('th-TH', { day:'numeric', month:'short' }),
+    round
+  });
+
+  // Show result
+  const wTeam = winner === 'a' ? match.teamA : match.teamB;
+  const el = document.getElementById('res-team-name');
+  el.textContent = winner === 'a' ? 'ทีม A' : 'ทีม B';
+  el.className = `win-team-name ${winner}`;
+  document.getElementById('res-players').textContent = wTeam.join(' & ') + ' ⭐';
+  document.getElementById('res-sa').textContent = match.scA;
+  document.getElementById('res-sb').textContent = match.scB;
+
+  goTo('pg-result');
+}
+
+document.getElementById('add-a').addEventListener('click', () => addPoint('a'));
+document.getElementById('add-b').addEventListener('click', () => addPoint('b'));
+document.getElementById('sub-a').addEventListener('click', () => subPoint('a'));
+document.getElementById('sub-b').addEventListener('click', () => subPoint('b'));
+
+document.getElementById('btn-quit-game').addEventListener('click', () => {
+  if (confirm('ออกจากเกมนี้? คะแนนจะไม่ถูกบันทึก')) goTo('pg-setup');
+});
+document.getElementById('btn-go-lb-from-play').addEventListener('click', () => {
+  prevPage = 'pg-play';
+  renderLB();
+  goTo('pg-lb');
+});
+
+/* ══════════════════════════════════
+   PAGE 4 – RESULT
+══════════════════════════════════ */
+document.getElementById('btn-next-round').addEventListener('click', () => {
+  round++;
+  initPickPage();
+  goTo('pg-pick');
+});
+
+document.getElementById('btn-rematch').addEventListener('click', () => {
+  match.scA = 0; match.scB = 0; match.serving = 'a';
+  renderPlayPage();
+  goTo('pg-play');
+});
+
+document.getElementById('btn-go-lb-from-result').addEventListener('click', () => {
+  prevPage = 'pg-result';
+  renderLB();
+  goTo('pg-lb');
+});
+
+document.getElementById('btn-new-session').addEventListener('click', () => {
+  if (confirm('เริ่มเซสชันใหม่? จะล้างประวัติทั้งหมด')) {
+    history = [];
+    round = 1;
+    renderPlayerList();
+    goTo('pg-setup');
+  }
+});
+
+/* ══════════════════════════════════
+   PAGE 5 – LEADERBOARD
+══════════════════════════════════ */
+function renderLB() {
+  // Build per-player stats
+  const stats = {};
+  history.forEach(m => {
+    [...m.teamA, ...m.teamB].forEach(p => {
+      if (!stats[p]) stats[p] = { w: 0, l: 0, n: 0 };
+      stats[p].n++;
+    });
+    const wPlayers = m.winner === 'a' ? m.teamA : m.teamB;
+    const lPlayers = m.winner === 'a' ? m.teamB : m.teamA;
+    wPlayers.forEach(p => { if (stats[p]) stats[p].w++; });
+    lPlayers.forEach(p => { if (stats[p]) stats[p].l++; });
+  });
+
+  const sorted = Object.entries(stats).sort((a, b) =>
+    b[1].w - a[1].w || (b[1].w / (b[1].n||1)) - (a[1].w / (a[1].n||1))
+  );
+  const medals = ['🥇', '🥈', '🥉'];
+
+  let html = '';
+
+  if (sorted.length === 0) {
+    html = `<div class="empty-state"><span>🏸</span><div style="font-weight:700;font-size:15px">ยังไม่มีแมตช์</div><div style="font-size:13px;margin-top:6px">เล่นรอบแรกกันเลย!</div></div>`;
+  } else {
+    html += `<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:8px">อันดับผู้เล่น</div>`;
+    html += sorted.map(([name, s], i) => `
+      <div class="lb-row">
+        <div class="rank-circle ${i === 0 ? 'gold' : ''}">${medals[i] || i + 1}</div>
+        <div style="flex:1">
+          <div class="lb-name">${name}</div>
+          <div class="lb-stat">${s.n} เกม · ${s.w}W ${s.l}L · ${s.n ? Math.round(s.w / s.n * 100) : 0}%</div>
+        </div>
+        <div class="win-tag">${s.w} ชนะ</div>
+      </div>`).join('');
+
+    html += `<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin:16px 0 8px">ประวัติแมตช์</div>`;
+    html += history.slice().reverse().map(m => {
+      const wa = m.winner === 'a', wb = m.winner === 'b';
+      return `<div class="match-history-row">
+        <div class="mh-score">
+          <span class="${wa ? 'wa' : ''}">${m.teamA.join(' & ')}</span>
+          <span style="color:var(--txt3);font-size:12px;margin:0 6px">${m.scA}–${m.scB}</span>
+          <span class="${wb ? 'wb' : ''}">${m.teamB.join(' & ')}</span>
+        </div>
+        <div class="mh-date">${m.date} รอบ${m.round}</div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('lb-content').innerHTML = html;
+}
+
+document.getElementById('btn-back-from-lb').addEventListener('click', () => {
+  goTo(prevPage || 'pg-setup');
+});
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
+renderPlayerList();
+</script>
+</body>
+</html>

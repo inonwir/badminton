@@ -6,6 +6,9 @@
 <title>🏸 แบดมินตัน</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
   /* ── Reset & Base ── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -623,9 +626,111 @@ document.getElementById('btn-back-from-lb').addEventListener('click', () => {
 });
 
 /* ══════════════════════════════════
-   INIT
+   FIREBASE SETUP
+   👉 วาง Config ของคุณตรงนี้
 ══════════════════════════════════ */
-renderPlayerList();
+const firebaseConfig = {
+  apiKey:            "AIzaSyCXwwxH-e3Osbo-yzpZWvk7rZN6hBKUhfY",
+  authDomain:        "badminton-d7284.firebaseapp.com",
+  projectId:         "badminton-d7284",
+  storageBucket:     "badminton-d7284.firebasestorage.app",
+  messagingSenderId: "146707203950",
+  appId:             "1:146707203950:web:57acd1cc12d4f25a65a37f",
+  measurementId:     "G-XQ148G3F4Q"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const DOC = db.collection('badminton').doc('shared');
+
+/* ── Toast ── */
+function showToast(msg, dur = 0) {
+  let t = document.getElementById('g-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'g-toast';
+    t.style.cssText = [
+      'position:fixed','bottom:28px','left:50%','transform:translateX(-50%)',
+      'background:#1a1a1a','color:#fff','padding:10px 22px','border-radius:24px',
+      'font-size:13px','font-weight:700','font-family:Nunito,sans-serif',
+      'z-index:9999','transition:opacity .3s','pointer-events:none','white-space:nowrap'
+    ].join(';');
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  if (dur) setTimeout(() => { t.style.opacity = '0'; }, dur);
+}
+
+/* ── Save to Firestore ── */
+async function fbSave() {
+  try {
+    await DOC.set({ players, history, round, updatedAt: Date.now() });
+    showToast('☁️ บันทึกแล้ว!', 2000);
+  } catch(e) {
+    showToast('⚠️ บันทึกไม่สำเร็จ (ตรวจ Config)', 3000);
+    console.warn('fbSave:', e);
+  }
+}
+
+/* ── Load from Firestore ── */
+async function fbLoad() {
+  showToast('⏳ กำลังโหลด...');
+  try {
+    const snap = await DOC.get();
+    if (snap.exists) {
+      const d = snap.data();
+      if (Array.isArray(d.players) && d.players.length >= 1) players = d.players;
+      if (Array.isArray(d.history)) history = d.history;
+      if (d.round) round = d.round;
+    }
+    showToast('✅ โหลดข้อมูลแล้ว!', 2000);
+  } catch(e) {
+    showToast('⚠️ โหลดไม่สำเร็จ ตรวจสอบ Config', 3000);
+    console.warn('fbLoad:', e);
+  }
+  renderPlayerList();
+}
+
+/* ── Patch checkWin to save after match ends ── */
+const _checkWin = checkWin;
+function checkWin() {
+  const before = history.length;
+  _checkWin();
+  if (history.length > before) {
+    fbSave();
+  }
+}
+
+/* ── Re-bind score buttons with patched checkWin ── */
+['add-a','add-b','sub-a','sub-b'].forEach(id => {
+  const old = document.getElementById(id).cloneNode(true);
+  document.getElementById(id).replaceWith(old);
+});
+document.getElementById('add-a').addEventListener('click', () => { if ('a'==='a') { match.scA++; match.serving='a'; triggerPop('a'); updateScoreUI(); checkWin(); }});
+document.getElementById('add-b').addEventListener('click', () => { match.scB++; match.serving='b'; triggerPop('b'); updateScoreUI(); checkWin(); });
+document.getElementById('sub-a').addEventListener('click', () => subPoint('a'));
+document.getElementById('sub-b').addEventListener('click', () => subPoint('b'));
+
+function triggerPop(team) {
+  const el = document.getElementById('sc-num-'+team);
+  if (!el) return;
+  el.classList.remove('do-pop');
+  void el.offsetWidth;
+  el.classList.add('do-pop');
+}
+
+/* ── Save when players confirmed ── */
+document.getElementById('btn-go-pick').addEventListener('click', () => fbSave(), true);
+/* ── Save round progress ── */
+document.getElementById('btn-next-round').addEventListener('click', () => setTimeout(fbSave, 150), true);
+/* ── Save on new session ── */
+document.getElementById('btn-new-session').addEventListener('click', () => setTimeout(fbSave, 300), true);
+
+/* ══════════════════════════════════
+   INIT — โหลดข้อมูลจาก Firebase
+══════════════════════════════════ */
+fbLoad();
 </script>
 </body>
 </html>

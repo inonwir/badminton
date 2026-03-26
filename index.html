@@ -506,13 +506,13 @@ document.getElementById('btn-add-player').addEventListener('click', () => {
 });
 
 document.getElementById('btn-go-pick').addEventListener('click', () => {
-  // validate: need at least 4 players with names
   const valid = players.filter(p => p.trim());
   if (valid.length < 4) { alert('ต้องมีผู้เล่นอย่างน้อย 4 คน'); return; }
   players = players.filter(p => p.trim());
   renderPlayerList();
   initPickPage();
   goTo('pg-pick');
+  setTimeout(fbSave, 100); // save after navigation
 });
 
 document.getElementById('btn-go-lb-from-setup').addEventListener('click', () => {
@@ -696,6 +696,7 @@ document.getElementById('btn-next-round').addEventListener('click', () => {
   round++;
   initPickPage();
   goTo('pg-pick');
+  setTimeout(fbSave, 100);
 });
 
 document.getElementById('btn-rematch').addEventListener('click', () => {
@@ -716,6 +717,7 @@ document.getElementById('btn-new-session').addEventListener('click', () => {
     round = 1;
     renderPlayerList();
     goTo('pg-setup');
+    setTimeout(fbSave, 100);
   }
 });
 
@@ -1133,12 +1135,19 @@ async function fbSave() {
 
 /* ── Load from Firestore ── */
 async function fbLoad() {
+  // Lock buttons during loading to prevent race condition
+  const addBtn = document.getElementById('btn-add-player');
+  const goBtn  = document.getElementById('btn-go-pick');
+  if (addBtn) addBtn.disabled = true;
+  if (goBtn)  goBtn.disabled  = true;
+
   showToast('⏳ กำลังโหลด...');
   try {
     const snap = await DOC.get();
     if (snap.exists) {
       const d = snap.data();
-      if (Array.isArray(d.players) && d.players.length >= 1) players = d.players;
+      if (Array.isArray(d.players) && d.players.filter(p=>p&&p.trim()).length >= 1)
+        players = d.players.filter(p => p !== null && p !== undefined);
       if (Array.isArray(d.history)) matchHistory = d.history;
       if (d.round) round = d.round;
       if (d.profiles && typeof d.profiles === 'object') profiles = d.profiles;
@@ -1149,14 +1158,11 @@ async function fbLoad() {
     console.warn('fbLoad:', e);
   }
   renderPlayerList();
-}
 
-/* ── Save when players confirmed ── */
-document.getElementById('btn-go-pick').addEventListener('click', () => fbSave(), true);
-/* ── Save round progress ── */
-document.getElementById('btn-next-round').addEventListener('click', () => setTimeout(fbSave, 150), true);
-/* ── Save on new session ── */
-document.getElementById('btn-new-session').addEventListener('click', () => setTimeout(fbSave, 300), true);
+  // Unlock after render is complete
+  if (addBtn) addBtn.disabled = false;
+  if (goBtn)  goBtn.disabled  = false;
+}
 
 /* ══════════════════════════════════
    INIT — โหลดข้อมูลจาก Firebase

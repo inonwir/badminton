@@ -153,6 +153,59 @@
   .score-badge .sa { color: var(--pink); }
   .score-badge .sb { color: var(--teal); }
 
+  /* ── Avatar ── */
+  .avatar { font-size: 22px; width: 38px; height: 38px; border-radius: 50%; background: var(--pink-lt);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer;
+            border: 2px solid transparent; transition: all .15s; }
+  .avatar:hover { border-color: var(--pink); }
+  .avatar-sm { font-size: 16px; width: 28px; height: 28px; }
+  .avatar-lg { font-size: 40px; width: 68px; height: 68px; border-radius: 50%; background: var(--pink-lt);
+               display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+
+  /* ── Avatar picker overlay ── */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5);
+             z-index: 100; align-items: flex-end; justify-content: center; }
+  .overlay.open { display: flex; }
+  .overlay-sheet { background: var(--surface); border-radius: 24px 24px 0 0; padding: 20px 16px 36px;
+                   width: 100%; max-width: 440px; animation: slideUp .25s ease; }
+  @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+  .overlay-title { font-size: 16px; font-weight: 800; margin-bottom: 14px; text-align: center; }
+  .avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 16px; }
+  .av-opt { font-size: 26px; width: 48px; height: 48px; border-radius: 14px; display: flex;
+            align-items: center; justify-content: center; cursor: pointer; border: 2px solid transparent;
+            background: var(--bg); transition: all .12s; }
+  .av-opt:hover { background: var(--pink-lt); }
+  .av-opt.selected { border-color: var(--pink); background: var(--pink-lt); }
+
+  /* ── Edit match overlay ── */
+  .edit-sheet { background: var(--surface); border-radius: 24px 24px 0 0; padding: 20px 16px 36px;
+                width: 100%; max-width: 440px; animation: slideUp .25s ease; }
+  .edit-score-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .edit-score-row label { font-size: 13px; font-weight: 800; color: var(--txt2); width: 60px; }
+  .score-input { width: 70px; padding: 10px; border-radius: 12px; border: 1.5px solid var(--border2);
+                 background: var(--bg); font-family: inherit; font-size: 18px; font-weight: 900;
+                 text-align: center; color: var(--txt); outline: none; }
+  .score-input:focus { border-color: var(--pink); }
+
+  /* ── Match history action btns ── */
+  .mh-actions { display: flex; gap: 6px; flex-shrink: 0; margin-left: 8px; }
+  .mh-btn { width: 28px; height: 28px; border-radius: 8px; border: none; cursor: pointer;
+            font-size: 13px; display: flex; align-items: center; justify-content: center; transition: all .1s; }
+  .mh-btn:active { transform: scale(.88); }
+  .mh-btn.edit { background: var(--pink-lt); color: var(--pink); }
+  .mh-btn.del  { background: #fee; color: #c00; }
+  @media (prefers-color-scheme: dark) { .mh-btn.del { background: #3a0000; } }
+
+  /* ── Profile page ── */
+  .profile-hero { text-align: center; padding: 20px 0 16px; }
+  .profile-name { font-size: 24px; font-weight: 900; margin-bottom: 4px; }
+  .profile-stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 16px 0; }
+  .pstat { background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+           padding: 12px 8px; text-align: center; }
+  .pstat-num { font-size: 24px; font-weight: 900; color: var(--pink); }
+  .pstat-lbl { font-size: 11px; font-weight: 700; color: var(--txt3); margin-top: 2px; }
+  .pstat-num.teal { color: var(--teal); }
+
   /* ═══════════════════════════
      PAGE 5 – LEADERBOARD
   ═══════════════════════════ */
@@ -321,7 +374,40 @@
   </div>
 </div>
 
-<!-- ─── PAGE 5: LEADERBOARD ─── -->
+<!-- ─── PAGE 6: PROFILE ─── -->
+<div class="page" id="pg-profile">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <button class="btn btn-ghost btn-sm" id="btn-back-from-profile">← กลับ</button>
+    <div style="width:70px"></div>
+  </div>
+  <div id="profile-content"></div>
+</div>
+
+<!-- ─── AVATAR PICKER OVERLAY ─── -->
+<div class="overlay" id="overlay-avatar">
+  <div class="overlay-sheet">
+    <div class="overlay-title">เลือก Avatar 🎨</div>
+    <div class="avatar-grid" id="avatar-grid"></div>
+    <button class="btn btn-ghost" id="btn-close-avatar">ปิด</button>
+  </div>
+</div>
+
+<!-- ─── EDIT MATCH OVERLAY ─── -->
+<div class="overlay" id="overlay-edit">
+  <div class="edit-sheet">
+    <div class="overlay-title">แก้ไขผลแมตช์ ✏️</div>
+    <div id="edit-match-names" style="font-size:13px;font-weight:700;color:var(--txt2);text-align:center;margin-bottom:14px"></div>
+    <div class="edit-score-row">
+      <label id="edit-label-a">ทีม A</label>
+      <input class="score-input" type="number" id="edit-sa" min="0" max="99">
+      <span style="font-size:18px;font-weight:900;color:var(--txt3)">–</span>
+      <input class="score-input" type="number" id="edit-sb" min="0" max="99">
+      <label id="edit-label-b">ทีม B</label>
+    </div>
+    <button class="btn btn-primary" id="btn-save-edit" style="margin-bottom:8px">💾 บันทึก</button>
+    <button class="btn btn-ghost" id="btn-close-edit">ยกเลิก</button>
+  </div>
+</div>
 <div class="page" id="pg-lb">
   <div class="lb-header">
     <button class="btn btn-ghost btn-sm" id="btn-back-from-lb">← กลับ</button>
@@ -343,6 +429,13 @@
 let players = ['ไก่', 'เป็ด', 'หมู', 'วัว'];  // default names
 let round   = 1;
 let prevPage = 'pg-setup';
+let profiles = {}; // name → { avatar }
+
+const AVATARS = ['🐱','🐶','🐸','🐼','🐨','🦊','🐯','🦁','🐮','🐷',
+                 '🐙','🐧','🦋','🦄','🐝','🦖','🐠','🦜','🐺','🦔',
+                 '🌸','⭐','🎀','🌈','🔥','💎','🎸','🚀','🏆','🍀'];
+
+function getAvatar(name) { return (profiles[name] && profiles[name].avatar) || '🏸'; }
 
 // current match state
 let match = {
@@ -372,6 +465,7 @@ function renderPlayerList() {
   const list = document.getElementById('player-list');
   list.innerHTML = players.map((p, i) => `
     <div class="player-row" data-i="${i}">
+      <button class="avatar avatar-sm" data-av-for="${i}" title="เลือก Avatar">${getAvatar(p)}</button>
       <input type="text" value="${p}" placeholder="ชื่อผู้เล่น ${i+1}" data-i="${i}">
       ${players.length > 4
         ? `<button class="del-btn" data-del="${i}">✕</button>`
@@ -380,13 +474,25 @@ function renderPlayerList() {
 
   list.querySelectorAll('input').forEach(inp => {
     inp.addEventListener('input', e => {
-      players[+e.target.dataset.i] = e.target.value.trim();
+      const oldName = players[+e.target.dataset.i];
+      const newName = e.target.value.trim();
+      // migrate profile key
+      if (oldName && profiles[oldName] && newName && oldName !== newName) {
+        profiles[newName] = profiles[oldName];
+        delete profiles[oldName];
+      }
+      players[+e.target.dataset.i] = newName;
     });
   });
   list.querySelectorAll('[data-del]').forEach(btn => {
     btn.addEventListener('click', e => {
       players.splice(+e.target.dataset.del, 1);
       renderPlayerList();
+    });
+  });
+  list.querySelectorAll('[data-av-for]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      openAvatarPicker(+e.currentTarget.dataset.avFor);
     });
   });
 }
@@ -675,27 +781,32 @@ function renderSolo() {
   const sorted = Object.entries(stats).sort((a,b)=>b[1].w-a[1].w||(b[1].w/(b[1].n||1))-(a[1].w/(a[1].n||1)));
   if (!sorted.length) return `<div class="empty-state"><span>🏸</span><div style="font-weight:700;font-size:15px">ยังไม่มีแมตช์</div></div>`;
   const rc = ['gold','silver','bronze'];
-  let h = `<div class="sec-label">อันดับผู้เล่น (ตลอดกาล)</div>`;
+  let h = `<div class="sec-label">อันดับผู้เล่น (แตะชื่อดู Profile)</div>`;
   h += sorted.map(([name,s],i) => `
-    <div class="lb-row">
+    <div class="lb-row" style="cursor:pointer" onclick="openProfile('${name.replace(/'/g,"\\'")}')">
       <div class="rank-circle ${rc[i]||''}">${['🥇','🥈','🥉'][i]||i+1}</div>
+      <div style="font-size:24px;margin-right:2px">${getAvatar(name)}</div>
       <div style="flex:1">
         <div class="lb-name">${name}</div>
-        <div class="lb-stat">${s.n} เกม · ${s.w}W ${s.l}L · ${s.n?Math.round(s.w/s.n*100):0}% · streak ${getStreak(name)}🔥</div>
+        <div class="lb-stat">${s.n} เกม · ${s.w}W ${s.l}L · ${s.n?Math.round(s.w/s.n*100):0}% · 🔥${getStreak(name)}</div>
       </div>
       <div class="win-tag">${s.w} ชนะ</div>
     </div>`).join('');
 
   h += `<div class="sec-label">ประวัติแมตช์</div>`;
-  h += matchHistory.slice().reverse().map(m=>{
+  h += matchHistory.slice().reverse().map((m, ri) => {
+    const idx = matchHistory.length - 1 - ri;
     const wa=m.winner==='a', wb=m.winner==='b';
     return `<div class="match-history-row">
-      <div class="mh-score">
-        <span class="${wa?'wa':''}">${m.teamA.join(' & ')}</span>
-        <span style="color:var(--txt3);font-size:11px;margin:0 5px">${m.scA}–${m.scB}</span>
-        <span class="${wb?'wb':''}">${m.teamB.join(' & ')}</span>
+      <div class="mh-score" style="flex:1;min-width:0">
+        <span class="${wa?'wa':''}">${m.teamA.map(n=>getAvatar(n)+n).join(' & ')}</span>
+        <span style="color:var(--txt3);font-size:11px;margin:0 4px">${m.scA}–${m.scB}</span>
+        <span class="${wb?'wb':''}">${m.teamB.map(n=>getAvatar(n)+n).join(' & ')}</span>
       </div>
-      <div class="mh-date">${m.date}</div>
+      <div class="mh-actions">
+        <button class="mh-btn edit" onclick="openEditMatch(${idx})" title="แก้ไข">✏️</button>
+        <button class="mh-btn del"  onclick="deleteMatch(${idx})"   title="ลบ">🗑️</button>
+      </div>
     </div>`;
   }).join('');
   return h;
@@ -826,7 +937,154 @@ document.getElementById('btn-back-from-lb').addEventListener('click', () => {
 });
 
 /* ══════════════════════════════════
-   FIREBASE SETUP
+   AVATAR PICKER
+══════════════════════════════════ */
+let avatarTargetIdx = -1;
+
+function openAvatarPicker(playerIdx) {
+  avatarTargetIdx = playerIdx;
+  const name = players[playerIdx];
+  const cur = getAvatar(name);
+  const grid = document.getElementById('avatar-grid');
+  grid.innerHTML = AVATARS.map(av =>
+    `<div class="av-opt${av===cur?' selected':''}" data-av="${av}">${av}</div>`
+  ).join('');
+  grid.querySelectorAll('.av-opt').forEach(el => {
+    el.addEventListener('click', () => {
+      const name = players[avatarTargetIdx];
+      if (!profiles[name]) profiles[name] = {};
+      profiles[name].avatar = el.dataset.av;
+      closeOverlay('overlay-avatar');
+      renderPlayerList();
+    });
+  });
+  document.getElementById('overlay-avatar').classList.add('open');
+}
+
+document.getElementById('btn-close-avatar').addEventListener('click', () => closeOverlay('overlay-avatar'));
+document.getElementById('overlay-avatar').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeOverlay('overlay-avatar');
+});
+
+/* ══════════════════════════════════
+   EDIT / DELETE MATCH
+══════════════════════════════════ */
+let editingMatchIdx = -1;
+
+function openEditMatch(idx) {
+  editingMatchIdx = idx;
+  const m = matchHistory[idx];
+  document.getElementById('edit-label-a').textContent = m.teamA.join(' & ');
+  document.getElementById('edit-label-b').textContent = m.teamB.join(' & ');
+  document.getElementById('edit-sa').value = m.scA;
+  document.getElementById('edit-sb').value = m.scB;
+  document.getElementById('edit-match-names').textContent =
+    `${m.teamA.join(' & ')}  vs  ${m.teamB.join(' & ')}`;
+  document.getElementById('overlay-edit').classList.add('open');
+}
+
+document.getElementById('btn-save-edit').addEventListener('click', () => {
+  if (editingMatchIdx < 0) return;
+  const sa = parseInt(document.getElementById('edit-sa').value) || 0;
+  const sb = parseInt(document.getElementById('edit-sb').value) || 0;
+  matchHistory[editingMatchIdx].scA = sa;
+  matchHistory[editingMatchIdx].scB = sb;
+  matchHistory[editingMatchIdx].winner = sa >= sb ? 'a' : 'b';
+  closeOverlay('overlay-edit');
+  fbSave();
+  renderLB();
+});
+
+document.getElementById('btn-close-edit').addEventListener('click', () => closeOverlay('overlay-edit'));
+document.getElementById('overlay-edit').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeOverlay('overlay-edit');
+});
+
+function deleteMatch(idx) {
+  if (!confirm('ลบแมตช์นี้?')) return;
+  matchHistory.splice(idx, 1);
+  fbSave();
+  renderLB();
+}
+
+function closeOverlay(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+/* ══════════════════════════════════
+   PROFILE PAGE
+══════════════════════════════════ */
+function openProfile(name) {
+  prevPage = document.querySelector('.page.active').id;
+  const stats = buildSoloStats(matchHistory);
+  const s = stats[name] || { w:0, l:0, n:0 };
+  const pct = s.n ? Math.round(s.w / s.n * 100) : 0;
+  const streak = getStreak(name);
+
+  // Best pair partner
+  const pairStats = {};
+  matchHistory.forEach(m => {
+    const myTeam = m.teamA.includes(name) ? m.teamA : m.teamB.includes(name) ? m.teamB : null;
+    if (!myTeam) return;
+    const won = (m.teamA.includes(name) && m.winner==='a') || (m.teamB.includes(name) && m.winner==='b');
+    myTeam.filter(p => p !== name).forEach(partner => {
+      if (!pairStats[partner]) pairStats[partner] = { w:0, n:0 };
+      pairStats[partner].n++;
+      if (won) pairStats[partner].w++;
+    });
+  });
+  const bestPartner = Object.entries(pairStats).sort((a,b)=>b[1].w-a[1].w)[0];
+
+  // Recent matches
+  const recent = matchHistory.filter(m => m.teamA.includes(name) || m.teamB.includes(name))
+    .slice(-5).reverse();
+
+  document.getElementById('profile-content').innerHTML = `
+    <div class="profile-hero">
+      <div class="avatar-lg">${getAvatar(name)}</div>
+      <div class="profile-name">${name}</div>
+      <div style="font-size:12px;color:var(--txt3);font-weight:600">${s.n} เกม · streak ${streak}🔥</div>
+    </div>
+    <div class="profile-stat-grid">
+      <div class="pstat"><div class="pstat-num">${s.w}</div><div class="pstat-lbl">ชนะ</div></div>
+      <div class="pstat"><div class="pstat-num teal">${s.l}</div><div class="pstat-lbl">แพ้</div></div>
+      <div class="pstat"><div class="pstat-num">${pct}%</div><div class="pstat-lbl">winrate</div></div>
+    </div>
+    ${bestPartner ? `<div class="lb-row" style="margin-bottom:16px">
+      <div style="font-size:24px">${getAvatar(bestPartner[0])}</div>
+      <div style="flex:1">
+        <div class="lb-name">คู่ขวัญ 💑 ${bestPartner[0]}</div>
+        <div class="lb-stat">เล่นด้วยกัน ${bestPartner[1].n} เกม · ชนะ ${bestPartner[1].w}</div>
+      </div>
+    </div>` : ''}
+    <div class="sec-label">แมตช์ล่าสุด</div>
+    ${recent.length === 0 ? '<div style="color:var(--txt3);font-size:13px;text-align:center;padding:16px">ยังไม่มีแมตช์</div>' :
+      recent.map(m => {
+        const inA = m.teamA.includes(name);
+        const won = (inA && m.winner==='a') || (!inA && m.winner==='b');
+        const myTeam = inA ? m.teamA : m.teamB;
+        const oppTeam = inA ? m.teamB : m.teamA;
+        const myScore = inA ? m.scA : m.scB;
+        const oppScore = inA ? m.scB : m.scA;
+        return `<div class="match-history-row">
+          <div>
+            <div class="mh-score" style="font-size:12px">
+              <span style="color:${won?'var(--teal)':'var(--pink)'}">vs ${oppTeam.join(' & ')}</span>
+              <span style="color:var(--txt3);margin:0 6px">${myScore}–${oppScore}</span>
+              <span style="background:${won?'var(--teal-lt)':'var(--pink-lt)'};color:${won?'var(--teal-dk)':'var(--pink-dk)'};padding:2px 8px;border-radius:8px;font-size:11px">${won?'ชนะ':'แพ้'}</span>
+            </div>
+            <div class="mh-date" style="margin-top:3px">${m.date}</div>
+          </div>
+        </div>`;
+      }).join('')
+    }`;
+
+  goTo('pg-profile');
+}
+
+document.getElementById('btn-back-from-profile').addEventListener('click', () => {
+  goTo(prevPage || 'pg-setup');
+});
    👉 วาง Config ของคุณตรงนี้
 ══════════════════════════════════ */
 const firebaseConfig = {
@@ -865,7 +1123,7 @@ function showToast(msg, dur = 0) {
 /* ── Save to Firestore ── */
 async function fbSave() {
   try {
-    await DOC.set({ players, history: matchHistory, round, updatedAt: Date.now() });
+    await DOC.set({ players, history: matchHistory, round, profiles, updatedAt: Date.now() });
     showToast('☁️ บันทึกแล้ว!', 2000);
   } catch(e) {
     showToast('⚠️ บันทึกไม่สำเร็จ (ตรวจ Config)', 3000);
@@ -883,6 +1141,7 @@ async function fbLoad() {
       if (Array.isArray(d.players) && d.players.length >= 1) players = d.players;
       if (Array.isArray(d.history)) matchHistory = d.history;
       if (d.round) round = d.round;
+      if (d.profiles && typeof d.profiles === 'object') profiles = d.profiles;
     }
     showToast('✅ โหลดข้อมูลแล้ว!', 2000);
   } catch(e) {

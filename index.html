@@ -156,25 +156,63 @@
   /* ═══════════════════════════
      PAGE 5 – LEADERBOARD
   ═══════════════════════════ */
-  .lb-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .lb-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   .lb-title-txt { font-size: 22px; font-weight: 900; }
+
+  /* Tabs */
+  .lb-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+  .lb-tab { flex: 1; padding: 9px 6px; border-radius: 12px; border: 1.5px solid var(--border2);
+            background: transparent; font-family: inherit; font-size: 13px; font-weight: 800;
+            color: var(--txt2); cursor: pointer; transition: all .15s; text-align: center; }
+  .lb-tab.active { background: var(--pink); color: #fff; border-color: var(--pink); }
+
+  /* Rank rows */
   .lb-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px;
             background: var(--surface); border-radius: 16px; border: 1px solid var(--border); margin-bottom: 8px; }
   .rank-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
                  font-size: 14px; font-weight: 800; background: var(--surface); border: 1.5px solid var(--border2); flex-shrink: 0; }
-  .rank-circle.gold { background: var(--gold); color: var(--gold-dk); border-color: var(--gold); }
+  .rank-circle.gold   { background: var(--gold);   color: var(--gold-dk); border-color: var(--gold); }
+  .rank-circle.silver { background: #e8e8e8; color: #555; border-color: #ccc; }
+  .rank-circle.bronze { background: #f5dfc0; color: #7a4a1e; border-color: #e0b080; }
   .lb-name { font-size: 15px; font-weight: 800; }
   .lb-stat { font-size: 12px; color: var(--txt2); font-weight: 600; margin-top: 2px; }
   .win-tag { background: var(--teal-lt); color: var(--teal-dk); padding: 4px 12px;
-             border-radius: 20px; font-size: 13px; font-weight: 800; margin-left: auto; }
+             border-radius: 20px; font-size: 13px; font-weight: 800; margin-left: auto; flex-shrink:0; }
+  .pair-tag { background: var(--pink-lt); color: var(--pink-dk); padding: 3px 10px;
+              border-radius: 12px; font-size: 11px; font-weight: 700; margin-top: 3px; display: inline-block; }
+
+  /* Title cards */
+  .title-card { border-radius: 18px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; }
+  .title-card.daily   { background: linear-gradient(135deg,#fff9e6,#fff3c4); border: 1.5px solid #FAC775; }
+  .title-card.weekly  { background: linear-gradient(135deg,#e8f5ff,#d0eaff); border: 1.5px solid #85B7EB; }
+  .title-card.monthly { background: linear-gradient(135deg,#f0eaff,#e2d4ff); border: 1.5px solid #AFA9EC; }
+  .title-card.streak  { background: linear-gradient(135deg,#fff0ea,#ffd9c4); border: 1.5px solid #F0997B; }
+  .title-card.comedy  { background: linear-gradient(135deg,#eafff5,#c8f5e4); border: 1.5px solid #5DCAA5; }
+  .title-card.pair    { background: linear-gradient(135deg,#ffeaf4,#ffd0e8); border: 1.5px solid #ED93B1; }
+  @media (prefers-color-scheme: dark) {
+    .title-card.daily   { background: #2a2200; border-color: #FAC775; }
+    .title-card.weekly  { background: #001a2e; border-color: #85B7EB; }
+    .title-card.monthly { background: #180f2e; border-color: #AFA9EC; }
+    .title-card.streak  { background: #2a0e00; border-color: #F0997B; }
+    .title-card.comedy  { background: #002a18; border-color: #5DCAA5; }
+    .title-card.pair    { background: #2a001a; border-color: #ED93B1; }
+  }
+  .title-icon { font-size: 32px; flex-shrink: 0; }
+  .title-body { flex: 1; }
+  .title-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: var(--txt3); }
+  .title-name  { font-size: 17px; font-weight: 900; color: var(--txt); margin: 2px 0; }
+  .title-desc  { font-size: 12px; color: var(--txt2); font-weight: 600; }
+
+  /* Section label */
+  .sec-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: var(--txt3); margin: 16px 0 8px; }
 
   .match-history-row { display: flex; justify-content: space-between; align-items: center;
                        padding: 10px 14px; background: var(--surface); border-radius: 12px;
                        border: 1px solid var(--border); margin-bottom: 6px; }
-  .mh-score { font-size: 14px; font-weight: 700; }
+  .mh-score { font-size: 13px; font-weight: 700; }
   .mh-score .wa { color: var(--pink); }
   .mh-score .wb { color: var(--teal); }
-  .mh-date  { font-size: 11px; color: var(--txt3); font-weight: 600; }
+  .mh-date  { font-size: 11px; color: var(--txt3); font-weight: 600; flex-shrink:0; margin-left:8px; }
 
   .empty-state { text-align: center; padding: 48px 16px; color: var(--txt3); }
   .empty-state span { font-size: 48px; display: block; margin-bottom: 12px; }
@@ -290,6 +328,11 @@
     <div class="lb-title-txt">🏆 ตาราง</div>
     <div style="width:70px"></div>
   </div>
+  <div class="lb-tabs">
+    <button class="lb-tab active" data-tab="solo">👤 เดี่ยว</button>
+    <button class="lb-tab" data-tab="pairs">👥 คู่</button>
+    <button class="lb-tab" data-tab="titles">🌟 ฉายา</button>
+  </div>
   <div id="lb-content"></div>
 </div>
 
@@ -311,7 +354,7 @@ let match = {
 };
 
 // history: array of { teamA, teamB, scA, scB, winner, date }
-let history = [];
+let matchHistory = [];
 
 /* ══════════════════════════════════
    NAVIGATION
@@ -500,13 +543,14 @@ function checkWin() {
   if (!winner) return;
 
   // Save to history
-  history.push({
+  matchHistory.push({
     teamA:  [...match.teamA],
     teamB:  [...match.teamB],
     scA:    match.scA,
     scB:    match.scB,
     winner,
     date:   new Date().toLocaleDateString('th-TH', { day:'numeric', month:'short' }),
+    ts:     Date.now(),
     round
   });
 
@@ -520,6 +564,9 @@ function checkWin() {
   document.getElementById('res-sb').textContent = match.scB;
 
   goTo('pg-result');
+
+  // Save to Firebase after win (fbSave defined later — called via setTimeout to ensure it's ready)
+  setTimeout(() => { if (typeof fbSave === 'function') fbSave(); }, 100);
 }
 
 document.getElementById('add-a').addEventListener('click', () => addPoint('a'));
@@ -559,7 +606,7 @@ document.getElementById('btn-go-lb-from-result').addEventListener('click', () =>
 
 document.getElementById('btn-new-session').addEventListener('click', () => {
   if (confirm('เริ่มเซสชันใหม่? จะล้างประวัติทั้งหมด')) {
-    history = [];
+    matchHistory = [];
     round = 1;
     renderPlayerList();
     goTo('pg-setup');
@@ -567,59 +614,212 @@ document.getElementById('btn-new-session').addEventListener('click', () => {
 });
 
 /* ══════════════════════════════════
-   PAGE 5 – LEADERBOARD
+   PAGE 5 – LEADERBOARD (tabbed)
 ══════════════════════════════════ */
-function renderLB() {
-  // Build per-player stats
+let lbTab = 'solo';
+
+function buildSoloStats(matches) {
   const stats = {};
-  history.forEach(m => {
+  matches.forEach(m => {
     [...m.teamA, ...m.teamB].forEach(p => {
-      if (!stats[p]) stats[p] = { w: 0, l: 0, n: 0 };
+      if (!stats[p]) stats[p] = { w:0, l:0, n:0 };
       stats[p].n++;
     });
-    const wPlayers = m.winner === 'a' ? m.teamA : m.teamB;
-    const lPlayers = m.winner === 'a' ? m.teamB : m.teamA;
-    wPlayers.forEach(p => { if (stats[p]) stats[p].w++; });
-    lPlayers.forEach(p => { if (stats[p]) stats[p].l++; });
+    const wp = m.winner==='a' ? m.teamA : m.teamB;
+    const lp = m.winner==='a' ? m.teamB : m.teamA;
+    wp.forEach(p => { if(stats[p]) stats[p].w++; });
+    lp.forEach(p => { if(stats[p]) stats[p].l++; });
+  });
+  return stats;
+}
+
+function buildPairStats(matches) {
+  const pairs = {};
+  matches.forEach(m => {
+    const key = (t) => [...t].sort().join(' & ');
+    const kA = key(m.teamA), kB = key(m.teamB);
+    if(!pairs[kA]) pairs[kA] = {w:0,l:0,n:0};
+    if(!pairs[kB]) pairs[kB] = {w:0,l:0,n:0};
+    pairs[kA].n++; pairs[kB].n++;
+    if(m.winner==='a') pairs[kA].w++; else pairs[kA].l++;
+    if(m.winner==='b') pairs[kB].w++; else pairs[kB].l++;
+  });
+  return pairs;
+}
+
+function filterByPeriod(matches, period) {
+  const now = Date.now();
+  const MS = { day: 86400000, week: 604800000, month: 2592000000 };
+  return matches.filter(m => (m.ts || 0) >= now - MS[period]);
+}
+
+function getStreak(name) {
+  let streak = 0;
+  for (let i = matchHistory.length-1; i >= 0; i--) {
+    const m = matchHistory[i];
+    const inA = m.teamA.includes(name), inB = m.teamB.includes(name);
+    if (!inA && !inB) continue;
+    const won = (inA && m.winner==='a') || (inB && m.winner==='b');
+    if (won) streak++; else break;
+  }
+  return streak;
+}
+
+function getBestPair() {
+  const ps = buildPairStats(matchHistory);
+  return Object.entries(ps).sort((a,b)=>b[1].w-a[1].w)[0];
+}
+
+function renderSolo() {
+  const stats = buildSoloStats(matchHistory);
+  const sorted = Object.entries(stats).sort((a,b)=>b[1].w-a[1].w||(b[1].w/(b[1].n||1))-(a[1].w/(a[1].n||1)));
+  if (!sorted.length) return `<div class="empty-state"><span>🏸</span><div style="font-weight:700;font-size:15px">ยังไม่มีแมตช์</div></div>`;
+  const rc = ['gold','silver','bronze'];
+  let h = `<div class="sec-label">อันดับผู้เล่น (ตลอดกาล)</div>`;
+  h += sorted.map(([name,s],i) => `
+    <div class="lb-row">
+      <div class="rank-circle ${rc[i]||''}">${['🥇','🥈','🥉'][i]||i+1}</div>
+      <div style="flex:1">
+        <div class="lb-name">${name}</div>
+        <div class="lb-stat">${s.n} เกม · ${s.w}W ${s.l}L · ${s.n?Math.round(s.w/s.n*100):0}% · streak ${getStreak(name)}🔥</div>
+      </div>
+      <div class="win-tag">${s.w} ชนะ</div>
+    </div>`).join('');
+
+  h += `<div class="sec-label">ประวัติแมตช์</div>`;
+  h += matchHistory.slice().reverse().map(m=>{
+    const wa=m.winner==='a', wb=m.winner==='b';
+    return `<div class="match-history-row">
+      <div class="mh-score">
+        <span class="${wa?'wa':''}">${m.teamA.join(' & ')}</span>
+        <span style="color:var(--txt3);font-size:11px;margin:0 5px">${m.scA}–${m.scB}</span>
+        <span class="${wb?'wb':''}">${m.teamB.join(' & ')}</span>
+      </div>
+      <div class="mh-date">${m.date}</div>
+    </div>`;
+  }).join('');
+  return h;
+}
+
+function renderPairs() {
+  const ps = buildPairStats(matchHistory);
+  const sorted = Object.entries(ps).sort((a,b)=>b[1].w-a[1].w||(b[1].w/(b[1].n||1))-(a[1].w/(a[1].n||1)));
+  if (!sorted.length) return `<div class="empty-state"><span>🏸</span><div style="font-weight:700;font-size:15px">ยังไม่มีแมตช์</div></div>`;
+  const rc = ['gold','silver','bronze'];
+  let h = `<div class="sec-label">อันดับคู่ (ตลอดกาล)</div>`;
+  h += sorted.map(([pairName,s],i) => `
+    <div class="lb-row">
+      <div class="rank-circle ${rc[i]||''}">${['🥇','🥈','🥉'][i]||i+1}</div>
+      <div style="flex:1">
+        <div class="lb-name">${pairName}</div>
+        <div class="lb-stat">${s.n} เกม · ${s.w}W ${s.l}L · ${s.n?Math.round(s.w/s.n*100):0}%</div>
+      </div>
+      <div class="win-tag">${s.w} ชนะ</div>
+    </div>`).join('');
+  return h;
+}
+
+function renderTitles() {
+  const periods = [
+    { key:'day',   label:'ประจำวัน',     cls:'daily',   icon:'☀️' },
+    { key:'week',  label:'ประจำสัปดาห์', cls:'weekly',  icon:'🌟' },
+    { key:'month', label:'ประจำเดือน',   cls:'monthly', icon:'👑' },
+  ];
+
+  const titleDefs = [
+    { id:'king',   label:'ราชาแห่งสนาม',   icon:'👑', desc: (n,s)=>`ชนะ ${s.w}/${s.n} เกม · เทพตัวจริง!` },
+    { id:'ace',    label:'เอซสายฟ้า',       icon:'⚡', desc: (n,s)=>`ชนะ ${s.w} เกมรวดเร็วทันใจ` },
+    { id:'rookie', label:'น้องใหม่ไฟแรง',   icon:'🌱', desc: (n,s)=>`เล่นแค่ ${s.n} เกม แต่แกร่งมาก!` },
+  ];
+
+  let h = '';
+  let hasAny = false;
+
+  periods.forEach(({key, label, cls, icon}) => {
+    const pm = filterByPeriod(matchHistory, key);
+    if (!pm.length) return;
+    hasAny = true;
+    const stats = buildSoloStats(pm);
+    const top = Object.entries(stats).sort((a,b)=>b[1].w-a[1].w)[0];
+    if (!top) return;
+    const [name, s] = top;
+    const winPct = s.n ? Math.round(s.w/s.n*100) : 0;
+    h += `<div class="title-card ${cls}">
+      <div class="title-icon">${icon}</div>
+      <div class="title-body">
+        <div class="title-label">เทพ${label}</div>
+        <div class="title-name">${name}</div>
+        <div class="title-desc">${s.w}W ${s.l}L · ${winPct}% ·  ${s.n} เกม</div>
+      </div>
+    </div>`;
   });
 
-  const sorted = Object.entries(stats).sort((a, b) =>
-    b[1].w - a[1].w || (b[1].w / (b[1].n||1)) - (a[1].w / (a[1].n||1))
-  );
-  const medals = ['🥇', '🥈', '🥉'];
-
-  let html = '';
-
-  if (sorted.length === 0) {
-    html = `<div class="empty-state"><span>🏸</span><div style="font-weight:700;font-size:15px">ยังไม่มีแมตช์</div><div style="font-size:13px;margin-top:6px">เล่นรอบแรกกันเลย!</div></div>`;
-  } else {
-    html += `<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:8px">อันดับผู้เล่น</div>`;
-    html += sorted.map(([name, s], i) => `
-      <div class="lb-row">
-        <div class="rank-circle ${i === 0 ? 'gold' : ''}">${medals[i] || i + 1}</div>
-        <div style="flex:1">
-          <div class="lb-name">${name}</div>
-          <div class="lb-stat">${s.n} เกม · ${s.w}W ${s.l}L · ${s.n ? Math.round(s.w / s.n * 100) : 0}%</div>
-        </div>
-        <div class="win-tag">${s.w} ชนะ</div>
-      </div>`).join('');
-
-    html += `<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin:16px 0 8px">ประวัติแมตช์</div>`;
-    html += history.slice().reverse().map(m => {
-      const wa = m.winner === 'a', wb = m.winner === 'b';
-      return `<div class="match-history-row">
-        <div class="mh-score">
-          <span class="${wa ? 'wa' : ''}">${m.teamA.join(' & ')}</span>
-          <span style="color:var(--txt3);font-size:12px;margin:0 6px">${m.scA}–${m.scB}</span>
-          <span class="${wb ? 'wb' : ''}">${m.teamB.join(' & ')}</span>
-        </div>
-        <div class="mh-date">${m.date} รอบ${m.round}</div>
-      </div>`;
-    }).join('');
+  // Streak king
+  const allPlayers = [...new Set(matchHistory.flatMap(m=>[...m.teamA,...m.teamB]))];
+  const streaks = allPlayers.map(p=>({p, s:getStreak(p)})).filter(x=>x.s>=2).sort((a,b)=>b.s-a.s);
+  if (streaks.length) {
+    hasAny = true;
+    h += `<div class="title-card streak">
+      <div class="title-icon">🔥</div>
+      <div class="title-body">
+        <div class="title-label">สายชนะไม่หยุด</div>
+        <div class="title-name">${streaks[0].p}</div>
+        <div class="title-desc">ชนะติดกัน ${streaks[0].s} เกมแล้ว! อย่าหยุด!</div>
+      </div>
+    </div>`;
   }
 
+  // Best pair
+  const bestPair = getBestPair();
+  if (bestPair && bestPair[1].w >= 1) {
+    hasAny = true;
+    h += `<div class="title-card pair">
+      <div class="title-icon">💑</div>
+      <div class="title-body">
+        <div class="title-label">คู่เฮงตลอดกาล</div>
+        <div class="title-name">${bestPair[0]}</div>
+        <div class="title-desc">ชนะด้วยกัน ${bestPair[1].w} เกม · คู่นี้ต้องระวัง!</div>
+      </div>
+    </div>`;
+  }
+
+  // Comedian (most losses)
+  if (matchHistory.length >= 3) {
+    const stats = buildSoloStats(matchHistory);
+    const loser = Object.entries(stats).filter(([,s])=>s.n>=2).sort((a,b)=>b[1].l-a[1].l)[0];
+    if (loser && loser[1].l >= 2) {
+      hasAny = true;
+      h += `<div class="title-card comedy">
+        <div class="title-icon">😅</div>
+        <div class="title-body">
+          <div class="title-label">นักสู้ผู้ไม่ยอมแพ้</div>
+          <div class="title-name">${loser[0]}</div>
+          <div class="title-desc">แพ้ ${loser[1].l} เกม แต่ยังไม่หนีกลับบ้าน ใจสู้มาก!</div>
+        </div>
+      </div>`;
+    }
+  }
+
+  if (!hasAny) return `<div class="empty-state"><span>🌟</span><div style="font-weight:700;font-size:15px">เล่นอีกหน่อยนะ</div><div style="font-size:13px;margin-top:6px">ฉายาจะขึ้นหลังจบเกมแรก!</div></div>`;
+  return h;
+}
+
+function renderLB() {
+  let html = '';
+  if      (lbTab === 'solo')   html = renderSolo();
+  else if (lbTab === 'pairs')  html = renderPairs();
+  else if (lbTab === 'titles') html = renderTitles();
   document.getElementById('lb-content').innerHTML = html;
 }
+
+// Tab click handlers
+document.querySelectorAll('.lb-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    lbTab = btn.dataset.tab;
+    document.querySelectorAll('.lb-tab').forEach(b => b.classList.toggle('active', b===btn));
+    renderLB();
+  });
+});
 
 document.getElementById('btn-back-from-lb').addEventListener('click', () => {
   goTo(prevPage || 'pg-setup');
@@ -665,7 +865,7 @@ function showToast(msg, dur = 0) {
 /* ── Save to Firestore ── */
 async function fbSave() {
   try {
-    await DOC.set({ players, history, round, updatedAt: Date.now() });
+    await DOC.set({ players, history: matchHistory, round, updatedAt: Date.now() });
     showToast('☁️ บันทึกแล้ว!', 2000);
   } catch(e) {
     showToast('⚠️ บันทึกไม่สำเร็จ (ตรวจ Config)', 3000);
@@ -681,7 +881,7 @@ async function fbLoad() {
     if (snap.exists) {
       const d = snap.data();
       if (Array.isArray(d.players) && d.players.length >= 1) players = d.players;
-      if (Array.isArray(d.history)) history = d.history;
+      if (Array.isArray(d.history)) matchHistory = d.history;
       if (d.round) round = d.round;
     }
     showToast('✅ โหลดข้อมูลแล้ว!', 2000);
@@ -690,34 +890,6 @@ async function fbLoad() {
     console.warn('fbLoad:', e);
   }
   renderPlayerList();
-}
-
-/* ── Patch checkWin to save after match ends ── */
-const _checkWin = checkWin;
-function checkWin() {
-  const before = history.length;
-  _checkWin();
-  if (history.length > before) {
-    fbSave();
-  }
-}
-
-/* ── Re-bind score buttons with patched checkWin ── */
-['add-a','add-b','sub-a','sub-b'].forEach(id => {
-  const old = document.getElementById(id).cloneNode(true);
-  document.getElementById(id).replaceWith(old);
-});
-document.getElementById('add-a').addEventListener('click', () => { if ('a'==='a') { match.scA++; match.serving='a'; triggerPop('a'); updateScoreUI(); checkWin(); }});
-document.getElementById('add-b').addEventListener('click', () => { match.scB++; match.serving='b'; triggerPop('b'); updateScoreUI(); checkWin(); });
-document.getElementById('sub-a').addEventListener('click', () => subPoint('a'));
-document.getElementById('sub-b').addEventListener('click', () => subPoint('b'));
-
-function triggerPop(team) {
-  const el = document.getElementById('sc-num-'+team);
-  if (!el) return;
-  el.classList.remove('do-pop');
-  void el.offsetWidth;
-  el.classList.add('do-pop');
 }
 
 /* ── Save when players confirmed ── */
